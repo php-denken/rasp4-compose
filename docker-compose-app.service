@@ -1,0 +1,18 @@
+# /etc/systemd/system/docker-compose-app.service
+
+[Unit]
+Description=Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/srv/docker
+ExecStart=/home/ubuntu/git/rasp4-compose/docker-compose up
+ExecStop=/home/ubuntu/git/rasp4-compose/docker-compose down
+TimeoutStartSec=0
+Restart=on-failure
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
