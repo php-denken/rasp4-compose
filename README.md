@@ -48,6 +48,24 @@ echo "setxkbmap de" | sudo tee -a /usr/share/sddm/scripts/Xsetup
 echo -e "[General]\nInputMethod=" | sudo tee -a /etc/sddm.conf
 ```
 
+to save some space remove libre office
+
+```
+sudo apt-get remove --purge libreoffice*
+sudo apt-get clean
+sudo apt-get autoremove
+```
+
+### Remote Desktop
+
+https://wiki.ubuntu.com/Lubuntu/RemoteDesktop
+
+```
+sudo apt-get install vino
+
+vino-preferences
+```
+
 ### Nexcloud with docker compose
 According to the offical guide from nextcloud on github
 https://github.com/nextcloud/docker#docker-secrets
