@@ -1,5 +1,26 @@
 version: "2"
+
+volumes:
+  portainer-data:
+
 services:
+  portainer-ce:
+    image: portainer/portainer:latest
+    container_name: base-portainer
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    restart: always
+
+  netdata:
+    image: netdata/netdata:latest
+    container_name: base-netdata
+    ports:
+      - 19999:19999
+    restart: always
+  
   nextcloud:
     image: linuxserver/nextcloud
     container_name: nextcloud
@@ -28,6 +49,7 @@ services:
       - traefik.http.middlewares.nextcloud-regex.redirectregex.permanent=true
       - traefik.http.middlewares.nextcloud-headers.headers.customFrameOptionsValue=SAMEORIGIN
       - traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=15552000
+  
   mariadb:
     image: linuxserver/mariadb
     container_name: mariadb
@@ -44,6 +66,7 @@ services:
     ports:
       - 3306:3306
     restart: unless-stopped
+  
   traefik:
     image: traefik:v2.0
     container_name: traefik
