@@ -18,66 +18,101 @@ Video guide https://www.youtube.com/watch?v=tlf_73MCeXQ
 https://ddnss.de/
 Configure fritzbox internet->freigaben->dyndns
 
-### Desktop
-desktop is usefull for first run of nextcloud
-recomanded for a raspberry is lubuntu
-https://www.raspberry-pi-geek.de/ausgaben/rpg/2020/02/ubuntu-server-19-10-in-32-und-64-bit-auf-dem-raspberry-pi/
-
-```
-sudo apt install lubuntu-desktop
-```
-
-use sddm as display manager if asked
-
-reboot and use desktop with attach display.
-
-language package with
-
-```
-sudo apt install language-pack-kde-de
-```
-
-
-Preferences->Language Support->Install/Remove Languages choose German and apply.
-Move Deutsch (Deutschland) to first position in list
-"Language for menus and windows" and enable "Apply System-Wide"
-SSDM-Login-Manager switch to german and disable on screenkeyboard with:
-
-```
-echo "setxkbmap de" | sudo tee -a /usr/share/sddm/scripts/Xsetup
-echo -e "[General]\nInputMethod=" | sudo tee -a /etc/sddm.conf
-```
-
-to save some space remove libre office
-
-```
-sudo apt-get remove --purge libreoffice*
-sudo apt-get clean
-sudo apt-get autoremove
-```
-
-### Remote Desktop
-
-https://wiki.ubuntu.com/Lubuntu/RemoteDesktop
-
-```
-sudo apt-get install vino
-
-vino-preferences
-```
 
 ### Nexcloud with docker compose
-According to the offical guide from nextcloud on github
-https://github.com/nextcloud/docker#docker-secrets
-the docker-compose.yml file in this repo is configured.
 
-Secret PW and user files can be randomly generated with the
-generate-nextcloud-user.sh script
+https://www.instructables.com/Installing-Nextcloud-on-a-Raspberry-Pi-Using-Docke/
 
-start all containers with:
-```
-docker compose up
-```
+Create required folders
+
+mkdir -p ~/nextcloud/{config,data}
+mkdir -p ~/mariadb/config
+mkdir ~/traefik
+touch ~/traefik/acme.json && chmod 600 ~/traefik/acme.json
+
+The acme.json is to hold details for letsencrypt to authorise your certificate.
+Create docker container
+
+Install docker-compose
+
+sudo apt install docker-compose
+
+Create a docker-compose.yml file in the home directory with following content (swap out the password, domain and email details with your own).
+
+version: "2"
+services:
+  nextcloud:
+    image: linuxserver/nextcloud
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - ~/nextcloud/config:/config
+      - ~/nextcloud/data:/data
+    ports:
+      - 9443:443
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nextcloud.entrypoints=websecure
+      - traefik.http.routers.nextcloud.rule=Host("your-domain-name")
+      - traefik.http.routers.nextcloud.tls=true
+      - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
+      - traefik.http.routers.nextcloud.service=nextcloud
+      - traefik.http.routers.nextcloud.middlewares=nextcloud-regex,nextcloud-headers
+      - traefik.http.services.nextcloud.loadbalancer.server.port=443
+      - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.replacement=https://$$1/remote.php/dav/
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.permanent=true
+      - traefik.http.middlewares.nextcloud-headers.headers.customFrameOptionsValue=SAMEORIGIN
+      - traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=15552000
+  mariadb:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=ChangeMePlease
+      - TZ=Europe/London
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=ChangeMeAlso
+    volumes:
+      - ~/mariadb/config:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  traefik:
+    image: traefik:v2.0
+    container_name: traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myhttpchallenge.acme.email=someaddress@somedomain.com
+      - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
+      - --serverstransport.insecureskipverify
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/traefik/acme.json:/acme.json
+    restart: unless-stopped
+
+Create container:
+
+docker-compose up -d
+
+
+accept self singned cert like https://javorszky.co.uk/2019/11/06/get-firefox-to-trust-your-self-signed-certificates/
+
 
 ### Make Nextcloud available
 
