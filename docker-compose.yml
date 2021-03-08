@@ -52,6 +52,7 @@ services:
       - ~/nextcloud/config:/config
       - ~/nextcloud/data:/data
     ports:
+      - 54:53
       - 9443:443
     restart: unless-stopped
     labels:
@@ -101,7 +102,6 @@ services:
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
-      - "54:53"
       - "81:80"
       - "10443:443"
     volumes:
