@@ -12,6 +12,11 @@ Raspberry with ubuntu server installed docker and docker-compose
 
 Video guide https://www.youtube.com/watch?v=tlf_73MCeXQ
 
+## Pi hole
+
+mkdir -p ~/pi-hole/{pihole,dnsmasq}
+
+
 ## Nextcloud
 
 ### Dyndns

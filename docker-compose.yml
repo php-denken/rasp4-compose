@@ -4,6 +4,26 @@ volumes:
   portainer-data:
 
 services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/udp"
+      - "443:443/udp"
+    environment:
+      TZ: 'Europe/Berlin'
+      WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
+    volumes:
+       - '~/pi-hole/pihole/:/etc/pihole/'
+       - '~/pi-hole/dnsmasq/:/etc/dnsmasq.d/'
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+
   portainer-ce:
     image: portainer/portainer:latest
     container_name: base-portainer
@@ -20,7 +40,7 @@ services:
     ports:
       - 19999:19999
     restart: always
-  
+
   nextcloud:
     image: linuxserver/nextcloud
     container_name: nextcloud
@@ -49,7 +69,7 @@ services:
       - traefik.http.middlewares.nextcloud-regex.redirectregex.permanent=true
       - traefik.http.middlewares.nextcloud-headers.headers.customFrameOptionsValue=SAMEORIGIN
       - traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=15552000
-  
+
   mariadb:
     image: linuxserver/mariadb
     container_name: mariadb
@@ -66,7 +86,7 @@ services:
     ports:
       - 3306:3306
     restart: unless-stopped
-  
+
   traefik:
     image: traefik:v2.0
     container_name: traefik
@@ -81,8 +101,8 @@ services:
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
-      - "80:80"
-      - "443:443"
+      - "81:80"
+      - "10443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/traefik/acme.json:/acme.json
