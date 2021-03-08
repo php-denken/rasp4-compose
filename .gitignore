@@ -3,3 +3,5 @@ nextcloud_admin_user.txt
 postgres_db.txt
 postgres_password.txt
 postgres_user.txt
+config.cfg
+docker-compose.yml

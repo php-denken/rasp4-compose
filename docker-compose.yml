@@ -9,11 +9,11 @@ services:
     image: pihole/pihole:latest
     restart: unless-stopped
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
-      - "80:80/udp"
-      - "443:443/udp"
+      - "192.168.188.58:53:53/tcp"
+      - "192.168.188.58:53:53/udp"
+      - "192.168.188.58:67:67/udp"
+      - "192.168.188.58:80:80/udp"
+      - "192.168.188.58:443:443/udp"
     environment:
       TZ: 'Europe/Berlin'
       WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
@@ -52,7 +52,6 @@ services:
       - ~/nextcloud/config:/config
       - ~/nextcloud/data:/data
     ports:
-      - 54:53
       - 9443:443
     restart: unless-stopped
     labels:
@@ -102,8 +101,8 @@ services:
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
-      - "81:80"
-      - "10443:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/traefik/acme.json:/acme.json
