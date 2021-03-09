@@ -14,7 +14,27 @@ Video guide https://www.youtube.com/watch?v=tlf_73MCeXQ
 
 ## Pi hole
 
+like https://goneuland.de/pi-hole-mit-docker-compose-und-traefik-installieren/
+but with proxy ngnix because of ports like here https://discourse.pi-hole.net/t/pihole-in-docker-together-with-nextlcoud-and-nginx/35974
+
 mkdir -p ~/pi-hole/{pihole,dnsmasq}
+
+pihole:
+  container_name: pihole
+  image: pihole/pihole:latest
+  restart: unless-stopped
+  ports:
+    - "###RASPBERRY_HOST_IP###:53:53/tcp"
+    - "###RASPBERRY_HOST_IP###:53:53/udp"
+  environment:
+    TZ: 'Europe/Berlin'
+    WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
+  volumes:
+     - '~/pi-hole/pihole/:/etc/pihole/'
+     - '~/pi-hole/dnsmasq/:/etc/dnsmasq.d/'
+  dns:
+    - 127.0.0.1
+    - 1.1.1.1
 
 
 ## Nextcloud
