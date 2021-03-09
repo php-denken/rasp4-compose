@@ -93,8 +93,8 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.address=:81
+      - --entrypoints.websecure.address=:10443
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.myhttpchallenge.acme.email=someaddress@somedomain.com
