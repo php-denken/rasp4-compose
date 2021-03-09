@@ -4,23 +4,6 @@ volumes:
   portainer-data:
 
 services:
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    restart: unless-stopped
-    ports:
-      - "###RASPBERRY_HOST_IP###:53:53/tcp"
-      - "###RASPBERRY_HOST_IP###:53:53/udp"
-    environment:
-      TZ: 'Europe/Berlin'
-      WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
-    volumes:
-       - '~/pi-hole/pihole/:/etc/pihole/'
-       - '~/pi-hole/dnsmasq/:/etc/dnsmasq.d/'
-    dns:
-      - 127.0.0.1
-      - 1.1.1.1
-
   portainer-ce:
     image: portainer/portainer:latest
     container_name: base-portainer
@@ -59,7 +42,7 @@ services:
       - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
       - traefik.http.routers.nextcloud.service=nextcloud
       - traefik.http.routers.nextcloud.middlewares=nextcloud-regex,nextcloud-headers
-      - traefik.http.services.nextcloud.loadbalancer.server.port=10443
+      - traefik.http.services.nextcloud.loadbalancer.server.port=443
       - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
       - traefik.http.middlewares.nextcloud-regex.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
       - traefik.http.middlewares.nextcloud-regex.redirectregex.replacement=https://$$1/remote.php/dav/
@@ -90,16 +73,16 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:81
-      - --entrypoints.websecure.address=:10443
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.myhttpchallenge.acme.email=someaddress@somedomain.com
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
-      - "81:80"
-      - "10443:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/traefik/acme.json:/acme.json
