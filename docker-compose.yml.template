@@ -62,7 +62,7 @@ services:
       - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
       - traefik.http.routers.nextcloud.service=nextcloud
       - traefik.http.routers.nextcloud.middlewares=nextcloud-regex,nextcloud-headers
-      - traefik.http.services.nextcloud.loadbalancer.server.port=443
+      - traefik.http.services.nextcloud.loadbalancer.server.port=10443
       - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
       - traefik.http.middlewares.nextcloud-regex.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
       - traefik.http.middlewares.nextcloud-regex.redirectregex.replacement=https://$$1/remote.php/dav/
@@ -101,8 +101,8 @@ services:
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
-      - "80:80"
-      - "443:443"
+      - "81:80"
+      - "10443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/traefik/acme.json:/acme.json
