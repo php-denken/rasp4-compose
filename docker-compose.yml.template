@@ -9,11 +9,11 @@ services:
     image: pihole/pihole:latest
     restart: unless-stopped
     ports:
-      - "###RASPBERRY_HOST_IP###:53:53/tcp"
-      - "###RASPBERRY_HOST_IP###:53:53/udp"
-      - "###RASPBERRY_HOST_IP###:67:67/udp"
-      - "###RASPBERRY_HOST_IP###:80:80/udp"
-      - "###RASPBERRY_HOST_IP###:443:443/udp"
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/udp"
+      - "443:443/udp"
     environment:
       TZ: 'Europe/Berlin'
       WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
