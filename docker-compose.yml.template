@@ -37,7 +37,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.nextcloud.entrypoints=websecure
-      - traefik.http.routers.nextcloud.rule=Host("192.168.188.58")
+      - traefik.http.routers.nextcloud.rule=Host("your-domain-name")
       - traefik.http.routers.nextcloud.tls=true
       - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
       - traefik.http.routers.nextcloud.service=nextcloud
@@ -56,11 +56,11 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - MYSQL_ROOT_PASSWORD=ChangeMePlease
+      - MYSQL_ROOT_PASSWORD=###NEXTCLOUD_DB_ROOT_PASSWORD###
       - TZ=Europe/London
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=ChangeMeAlso
+      - MYSQL_DATABASE=###NEXTCLOUD_DB_NAME###
+      - MYSQL_USER=###NEXTCLOUD_DB_USER###
+      - MYSQL_PASSWORD=###NEXTCLOUD_DB_PW###
     volumes:
       - ~/mariadb/config:/config
     ports:
