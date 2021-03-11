@@ -41,8 +41,13 @@ pihole:
 
 ### Dyndns
 https://ddnss.de/
-Configure fritzbox internet->freigaben->dyndns
 
+Configure fritzbox internet->freigaben->dyndns
+Use domain in config.cfg
+for
+DYNDNS_DOMAIN
+Also set
+MAIL_FOR_CERT
 
 ### Nexcloud with docker compose
 

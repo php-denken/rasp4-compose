@@ -37,7 +37,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.nextcloud.entrypoints=websecure
-      - traefik.http.routers.nextcloud.rule=Host("your-domain-name")
+      - traefik.http.routers.nextcloud.rule=Host("###DYNDNS_DOMAIN###")
       - traefik.http.routers.nextcloud.tls=true
       - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
       - traefik.http.routers.nextcloud.service=nextcloud
@@ -77,7 +77,7 @@ services:
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
       - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.myhttpchallenge.acme.email=someaddress@somedomain.com
+      - --certificatesresolvers.myhttpchallenge.acme.email=###MAIL_FOR_CERT###
       - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
       - --serverstransport.insecureskipverify
     ports:
