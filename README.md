@@ -12,31 +12,6 @@ Raspberry with ubuntu server installed docker and docker-compose
 
 Video guide https://www.youtube.com/watch?v=tlf_73MCeXQ
 
-## Pi hole
-
-like https://goneuland.de/pi-hole-mit-docker-compose-und-traefik-installieren/
-but with proxy ngnix because of ports like here https://discourse.pi-hole.net/t/pihole-in-docker-together-with-nextlcoud-and-nginx/35974
-
-mkdir -p ~/pi-hole/{pihole,dnsmasq}
-
-pihole:
-  container_name: pihole
-  image: pihole/pihole:latest
-  restart: unless-stopped
-  ports:
-    - "###RASPBERRY_HOST_IP###:53:53/tcp"
-    - "###RASPBERRY_HOST_IP###:53:53/udp"
-  environment:
-    TZ: 'Europe/Berlin'
-    WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
-  volumes:
-     - '~/pi-hole/pihole/:/etc/pihole/'
-     - '~/pi-hole/dnsmasq/:/etc/dnsmasq.d/'
-  dns:
-    - 127.0.0.1
-    - 1.1.1.1
-
-
 ## Nextcloud
 
 ### Dyndns
@@ -63,9 +38,7 @@ touch ~/traefik/acme.json && chmod 600 ~/traefik/acme.json
 The acme.json is to hold details for letsencrypt to authorise your certificate.
 Create docker container
 
-
 docker-compose up -d
-
 
 for firefox: accept self singned cert like https://javorszky.co.uk/2019/11/06/get-firefox-to-trust-your-self-signed-certificates/
 
@@ -86,3 +59,52 @@ https://github.com/nextcloud/docker#make-your-nextcloud-available-from-the-inter
 
 #### Portforwarding to make it finally available
 portforwarding like https://canox.net/2016/06/die-eigene-cloud-mit-dem-raspberry-pi-und-nextcloud/
+
+Fritzbox-> Internet-> Freigaben-> Greät hinzufügen
+forward 80 and 443 / HTTP and HTTPS
+
+Add your domain to nextcloud config.
+
+the config dir is linked to ~/nextcloud/config
+create the config.php according to the offical documentation
+https://docs.nextcloud.com/server/21/admin_manual/installation/installation_wizard.html#trusted-domains
+
+for me it was in /nextcloud/config/www/nextcloud/config and had to look like:
+```
+  'trusted_domains' =>
+  array (
+    0 => '192.168.I.P:9443',
+    1 => 'subdomain.ddnss.de',
+  ),
+
+```
+
+You could now check your installtion with
+https://scan.nextcloud.com/
+
+
+## Pi hole
+
+This Part is under development
+
+like https://goneuland.de/pi-hole-mit-docker-compose-und-traefik-installieren/
+but with proxy ngnix because of ports like here https://discourse.pi-hole.net/t/pihole-in-docker-together-with-nextlcoud-and-nginx/35974
+
+mkdir -p ~/pi-hole/{pihole,dnsmasq}
+
+pihole:
+  container_name: pihole
+  image: pihole/pihole:latest
+  restart: unless-stopped
+  ports:
+    - "###RASPBERRY_HOST_IP###:53:53/tcp"
+    - "###RASPBERRY_HOST_IP###:53:53/udp"
+  environment:
+    TZ: 'Europe/Berlin'
+    WEBPASSWORD: 'sicheresPasswort'  # hier euer Passwort eingeben
+  volumes:
+     - '~/pi-hole/pihole/:/etc/pihole/'
+     - '~/pi-hole/dnsmasq/:/etc/dnsmasq.d/'
+  dns:
+    - 127.0.0.1
+    - 1.1.1.1
